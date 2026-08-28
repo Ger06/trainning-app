@@ -1,0 +1,276 @@
+@import "tailwindcss";
+
+/* ── Dirección: hoja de programación sobre papel cuadriculado ─────────────── */
+@theme {
+  --color-paper: #eef1ee;
+  --color-ink: #16211c;
+  --color-rule: #c4cec7;
+  --color-rule-strong: #8b978f;
+  --color-field: #ffffff;
+  --color-logged: #1f6f5c; /* verde "registrado" — el lápiz que marca la serie hecha */
+  --color-logged-quiet: #e4ede7;
+  --color-wrong: #b23b2e; /* rojo "corregido" — la lapicera del coach */
+  --color-wrong-quiet: #f4e6e2;
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, "SF Mono", "Consolas", monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Cuadrícula de papel milimetrado, muy tenue */
+.sheet-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-rule-strong) 20%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-rule-strong) 20%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 28px 28px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@layer components {
+  .auth-main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .auth-alt {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--color-ink) 62%, transparent);
+  }
+  .auth-alt__link {
+    color: var(--color-logged);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* La planilla */
+  .sheet {
+    width: 100%;
+    max-width: 26rem;
+    background: var(--color-field);
+    border: 1px solid var(--color-rule-strong);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+  .sheet__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-ink);
+  }
+  .sheet__tag {
+    color: var(--color-rule-strong);
+  }
+  .sheet__title {
+    margin: -0.25rem 0 0.25rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* Filas etiqueta + campo */
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .row__label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  }
+  .row__field {
+    height: 2.75rem;
+    padding: 0 0.75rem;
+    background: var(--color-field);
+    border: 1px solid var(--color-rule-strong);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+  .row__field:focus-visible {
+    outline: 2px solid var(--color-logged);
+    outline-offset: 1px;
+    border-color: var(--color-logged);
+  }
+
+  /* Firma: el rol como celdas de la planilla */
+  .cells {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .cell {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.7rem 0.75rem;
+    border: 1px solid var(--color-rule-strong);
+    background: var(--color-field);
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+  .cell--on {
+    background: var(--color-logged-quiet);
+  }
+  .cell--on::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--color-logged);
+  }
+  .cell__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .cell__mark {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1;
+    color: var(--color-logged);
+    text-align: center;
+  }
+  .cell__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .cell__name {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .cell__note {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  }
+  .cell:has(.cell__input:focus-visible) {
+    outline: 2px solid var(--color-logged);
+    outline-offset: 1px;
+  }
+
+  /* Error: como una corrección en rojo sobre la hoja */
+  .mark-wrong {
+    border-left: 3px solid var(--color-wrong);
+    background: var(--color-wrong-quiet);
+    padding: 0.55rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-ink);
+  }
+
+  .submit {
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 120ms ease;
+  }
+  .submit:hover {
+    opacity: 0.88;
+  }
+  .submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .submit:focus-visible {
+    outline: 2px solid var(--color-logged);
+    outline-offset: 2px;
+  }
+
+  .ghost {
+    height: 2.75rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-rule-strong);
+    background: var(--color-field);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .ghost:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .ghost:focus-visible {
+    outline: 2px solid var(--color-logged);
+    outline-offset: 2px;
+  }
+
+  .home__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .home__line {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
