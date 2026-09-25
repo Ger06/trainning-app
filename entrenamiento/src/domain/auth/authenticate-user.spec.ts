@@ -23,6 +23,7 @@ interface Overrides {
 function makeDeps(over: Overrides = {}) {
   const accounts: AccountRepository = {
     findByNormalizedUsername: vi.fn(async () => (over.found === undefined ? STORED : over.found)),
+    findById: vi.fn(async () => null),
     insert: vi.fn(async () => {
       throw new Error('insert no debería llamarse en login')
     }),

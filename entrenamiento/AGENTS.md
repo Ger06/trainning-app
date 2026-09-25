@@ -1,4 +1,4 @@
-# AGENTS.md — <entrenamiento>
+# AGENTS.md — entrenamiento
 
 ## Proyecto
 Entrenamiento es una plataforma para que entrenadores puedan armar rutinas de ejercicios personalizadas, y que los alumnos puedan consultarlas. Voy a trabajar con Next.js, shadcn, vitest y MongoDB

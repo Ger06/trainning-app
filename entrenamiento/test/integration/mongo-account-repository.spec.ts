@@ -60,6 +60,6 @@ describe.skipIf(!hasMongo)('T18 · mongo-account-repository (integración)', () 
   })
 
   it('no expone ninguna operación de actualización de role (RF-7)', () => {
-    expect(Object.keys(repo).sort()).toEqual(['findByNormalizedUsername', 'insert'])
+    expect(Object.keys(repo).sort()).toEqual(['findById', 'findByNormalizedUsername', 'insert'])
   })
 })

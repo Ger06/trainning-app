@@ -1,57 +1,93 @@
-# Training App - Monorepo 🏋️‍♂️
+# Training App 🏋️‍♂️
 
-Este repositorio contiene la solución completa de la aplicación de gestión de entrenamientos, dividida en un frontend moderno y un backend robusto.
+Aplicación de gestión de entrenamientos para entrenadores y alumnos, construida con **Next.js** (frontend y API en un mismo proyecto) y **MongoDB**.
+
+## 🧭 Metodología: SDD + TDD
+
+El proyecto se desarrolla con **Spec-Driven Development (SDD)** y **Test-Driven Development (TDD)**:
+
+- **SDD:** ningún cambio de comportamiento se implementa sin una spec activa en `entrenamiento/specs/`. Cada feature tiene su carpeta con:
+  - `spec.md`: qué se construye (requisitos funcionales RF-n).
+  - `plan.md`: cómo se construye.
+  - `tasks.md`: tareas de implementación.
+  - `verification.md`: trazabilidad de requisitos a tests y puntos abiertos.
+
+  Si el código y la spec discrepan, gana la spec.
+- **TDD:** cada tarea arranca con un test que falla y después se escribe el código que lo hace pasar. Toda lógica nueva lleva test unitario, todo endpoint o flujo lleva test de integración, y `npm run test` tiene que pasar al 100 % antes de fusionar.
+
+Las reglas no negociables del proyecto están en [`entrenamiento/docs/constitution.md`](./entrenamiento/docs/constitution.md).
 
 ## 📂 Estructura del Proyecto
 
-El proyecto está organizado como un monorepo con las siguientes carpetas principales:
+```
+.
+├── .agents/skills/          # Skills para agentes de IA (p. ej. frontend-design)
+├── skills-lock.json
+└── entrenamiento/           # App Next.js (UI + API)
+    ├── docs/
+    │   └── constitution.md  # Principios del proyecto
+    ├── specs/               # Specs SDD, una carpeta por feature
+    │   ├── 001-registro-login/
+    │   └── 002-rutina-ejercicio/
+    ├── src/
+    │   ├── app/             # App Router: páginas y rutas /api
+    │   ├── components/      # Componentes UI (solo renderizan y delegan)
+    │   ├── domain/          # Lógica de negocio pura (sin React, red ni MongoDB)
+    │   ├── infra/           # Adaptadores: repositorios Mongo, migraciones, crypto, container
+    │   ├── lib/             # Utilidades compartidas (HTTP, mensajes)
+    │   └── middleware.ts    # Chequeo de sesión
+    └── test/
+        ├── unit/            # Tests de arquitectura y scaffold
+        └── integration/     # Tests contra MongoDB real
+```
 
-- **[entrenamiento front](./entrenamiento%20front/)**: Aplicación web construida con **Next.js 14**, Redux Toolkit y i18next.
-- **[nestjs-boilerplate](./nestjs-boilerplate/)**: API REST construida con **NestJS 10**, Prisma ORM y PostgreSQL.
+Los tests unitarios de dominio viven junto al código (`*.spec.ts`).
 
----
+## 🗺️ Features
+
+| Spec | Estado |
+| :--- | :--- |
+| [001 — Registro y login](./entrenamiento/specs/001-registro-login/) | ✅ Implementada |
+| [002 — Rutina y ejercicio](./entrenamiento/specs/002-rutina-ejercicio/) | 🚧 En progreso |
 
 ## 🚀 Inicio Rápido
 
-### 💻 Backend (nestjs-boilerplate)
+Requisitos: Node.js y una instancia de MongoDB.
 
-El backend maneja la lógica de negocio, autenticación JWT y persistencia de datos.
+```bash
+cd entrenamiento
+npm install
+```
 
-1. Navega a la carpeta: `cd nestjs-boilerplate`
-2. Instala dependencias: `npm install`
-3. Configura tu `.env` (puedes usar `.env.example` como base).
-4. Genera el cliente de Prisma: `npx prisma generate`
-5. Ejecuta las migraciones: `npx prisma migrate dev`
-6. Inicia en desarrollo: `npm run dev`
+Creá `entrenamiento/.env.local` con:
 
-> [!TIP]
-> La documentación de la API (Swagger) estará disponible en `http://localhost:3000/docs` una vez que el servidor esté corriendo.
+```env
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DB=entrenamiento
+SESSION_SECRET=<un-secreto-largo-y-aleatorio>
+```
 
-### 🌐 Frontend (entrenamiento front)
+```bash
+npm run dev    # http://localhost:3000
+```
 
-El frontend proporciona la interfaz de usuario para entrenadores y alumnos.
+### Tests
 
-1. Navega a la carpeta: `cd "entrenamiento front"`
-2. Instala dependencias: `npm install`
-3. Inicia el servidor de desarrollo: `npm run dev`
-4. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+```bash
+npm run test               # todos
+npm run test:unit          # unitarios
+npm run test:integration   # integración (requiere MONGODB_URI)
+```
 
----
-
-## 🛠️ Tecnologías Principales
+## 🛠️ Tecnologías
 
 | Componente | Tecnologías |
 | :--- | :--- |
-| **Frontend** | Next.js 14, Redux (Toolkit + Saga), i18next, Sass |
-| **Backend** | NestJS, Prisma ORM, PostgreSQL, JWT, Swagger |
-| **Calidad** | ESLint, Prettier, Husky, Commitlint |
-
----
-
-## 📝 Notas de Desarrollo
-
-- **Consolidación**: Este proyecto fue consolidado en un monorepo para facilitar la gestión sincronizada de cambios en el frontend y backend.
-- **Git**: Los commits realizados en la raíz afectan a todo el proyecto. Se recomienda usar mensajes claros para distinguir cambios en cada módulo.
+| **App** | Next.js 16 (App Router), React 19, TypeScript |
+| **UI** | shadcn/ui, Tailwind CSS v4 |
+| **Persistencia** | MongoDB (driver oficial, con migraciones versionadas y `$jsonSchema`) |
+| **Auth** | Sesiones en MongoDB, hashing scrypt y cookies firmadas con HMAC (`node:crypto`) |
+| **Tests** | Vitest |
 
 ---
 Desarrollado con ❤️ por Gerardo.

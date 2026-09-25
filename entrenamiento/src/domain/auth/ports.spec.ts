@@ -20,12 +20,16 @@ describe('ports · contrato de tipos', () => {
       async findByNormalizedUsername() {
         return null
       },
+      async findById() {
+        return null
+      },
       async insert(data) {
         return account({ id: 'acc_1', ...data })
       },
     }
 
     expect(await repo.findByNormalizedUsername('ana')).toBeNull()
+    expect(await repo.findById('acc_1')).toBeNull()
     const acc = await repo.insert({
       username: 'Ana',
       usernameNormalized: 'ana',

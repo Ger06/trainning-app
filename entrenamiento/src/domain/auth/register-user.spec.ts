@@ -17,6 +17,7 @@ function makeDeps(over: Overrides = {}) {
   const insertCalls: NewAccount[] = []
   const accounts: AccountRepository = {
     findByNormalizedUsername: vi.fn(async () => over.existing ?? null),
+    findById: vi.fn(async () => null),
     insert: vi.fn(async (data: NewAccount) => {
       insertCalls.push(data)
       return over.insertImpl ? over.insertImpl(data) : account({ id: 'acc_new', ...data })
