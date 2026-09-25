@@ -12,6 +12,9 @@ export interface AccountRepository {
   /** La cuenta con ese `usernameNormalized`, o `null` si no existe (RF‑11). */
   findByNormalizedUsername(usernameNormalized: string): Promise<Account | null>
 
+  /** La cuenta con ese `id`, o `null` si no existe (solo lectura). */
+  findById(id: string): Promise<Account | null>
+
   /**
    * Persiste una cuenta nueva y devuelve la `Account` resultante (con `id`).
    * @throws `UsernameTakenError` si el índice único de `usernameNormalized` la

@@ -40,6 +40,12 @@ export function createMongoAccountRepository(db: Db): AccountRepository {
       return doc ? toAccount(doc) : null
     },
 
+    async findById(id) {
+      if (!ObjectId.isValid(id)) return null
+      const doc = await collection.findOne({ _id: new ObjectId(id) })
+      return doc ? toAccount(doc) : null
+    },
+
     async insert(data: NewAccount) {
       const _id = new ObjectId()
       try {

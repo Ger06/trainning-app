@@ -1,11 +1,6 @@
 /**
- * Resultado de una operación del dominio que puede fallar con un error tipado
- * (constitución P3). Lo devuelven las validaciones (T7) y los casos de uso
- * (T12–T14) en lugar de lanzar.
+ * Re-export del módulo compartido `@/domain/shared/result` (spec 002, D12).
+ * Se conserva esta ruta para no tocar el código de la spec 001 que ya importa
+ * de `@/domain/auth/result`.
  */
-export type Result<T, E> =
-  | { readonly ok: true; readonly value: T }
-  | { readonly ok: false; readonly error: E }
-
-export const ok = <T>(value: T): Result<T, never> => ({ ok: true, value })
-export const err = <E>(error: E): Result<never, E> => ({ ok: false, error })
+export * from '../shared/result'

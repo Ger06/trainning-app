@@ -4,14 +4,24 @@ import { SESSION_COOKIE_NAME } from '@/infra/session/session-cookie-constants'
 
 /**
  * T26 · Puerta de acceso a las zonas con cuenta. Sólo comprueba **presencia** de
- * la cookie de sesión (plan D9); la verificación fuerte (firma + sesión viva)
- * la hace cada handler/loader. Corre en Edge: nada de `node:crypto` ni driver.
+ * la cookie de sesión (plan D9); la verificación fuerte (firma + sesión viva +
+ * rol) la hace cada handler (spec 002: `currentTrainer`). Corre en Edge: nada de
+ * `node:crypto` ni driver.
  *
- * `[NECESITA ACLARACIÓN]` (spec.md): los espacios por rol aún no existen. Hoy
- * sólo se protege la sonda de sesión. Al añadir prefijos aquí hay que
- * reflejarlos también en `config.matcher` (Next exige un matcher estático).
+ * Al añadir prefijos aquí hay que reflejarlos también en `config.matcher`
+ * (Next exige un matcher estático).
  */
-export const PROTECTED_PREFIXES: readonly string[] = ['/api/auth/session']
+export const PROTECTED_PREFIXES: readonly string[] = [
+  '/api/auth/session',
+  // spec 002 — acciones del entrenador (RF-1)
+  '/api/exercises',
+  '/api/routines',
+  '/api/assignments',
+  // spec 002 — páginas del entrenador
+  '/exercises',
+  '/routines',
+  '/assign',
+]
 
 export function isProtected(
   pathname: string,
@@ -40,5 +50,20 @@ export function middleware(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ['/api/auth/session/:path*', '/api/auth/session'],
+  matcher: [
+    '/api/auth/session/:path*',
+    '/api/auth/session',
+    '/api/exercises/:path*',
+    '/api/exercises',
+    '/api/routines/:path*',
+    '/api/routines',
+    '/api/assignments/:path*',
+    '/api/assignments',
+    '/exercises/:path*',
+    '/exercises',
+    '/routines/:path*',
+    '/routines',
+    '/assign/:path*',
+    '/assign',
+  ],
 }
